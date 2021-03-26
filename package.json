@@ -1,0 +1,27 @@
+{
+  "name": "gurushot-voter",
+  "version": "1.0.0",
+  "devDependencies": {
+    "puppeteer": "^8.0.0"
+  },
+  "dependencies": {
+    "node-cron": "^3.0.0",
+    "nodemon": "^2.0.7"
+  },
+  "description": "Gurushots auto voting and boosting",
+  "main": "main.js",
+  "scripts": {
+    "start": "nodemon main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "maatt",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maatt/gurushots-auto-vote-and-boost.git"
+  },
+  "bugs": {
+    "url": "https://github.com/maatt/gurushots-auto-vote-and-boost/issues"
+  },
+  "homepage": "https://github.com/maatt/gurushots-auto-vote-and-boost#readme"
+}
