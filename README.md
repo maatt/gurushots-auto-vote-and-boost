@@ -6,14 +6,14 @@ This script uses Nodemon to restart if it crashes.
 
 This script also runs on a Cron Schedule, by default it runs every half hour. (1PM, 1:30PM, 2PM, 2:30PM etc)
 
-##Screenshot:
+## Screenshot:
 
 ![alt text](https://i.imgur.com/EP5qXAx.png)
 ----
-##Requirements:
+## Requirements:
 + NodeJS 8+
 
-##Installation Example
+## Installation Example
 
 ----
 
