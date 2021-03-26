@@ -1,11 +1,10 @@
 const puppeteer = require('puppeteer');
-const cron = require('node-cron');
 const fs = require('fs');
 const config = require('./config.json');
 const cookies = require('./cookies.json');
+const cron = require('node-cron');
 
-console.log("Nodemon will restart this script if it crashes\nThis script is set to run every 30 minutes by default 1300, 1330, 1400, 1430, 1500 etc..");
-cron.schedule('*/2 * * * *', () => {
+const runner = cron.schedule('*/30 * * * *', () => {
    console.clear();
    console.log("   _____                      _           _                       _         __      __   _            \n" +
        "  / ____|                    | |         | |           /\\        | |        \\ \\    / /  | |           \n" +
@@ -16,12 +15,13 @@ cron.schedule('*/2 * * * *', () => {
        "                                                                                                      \n" +
        "                                                                                                      ");
    (async () => {
-      console.log('Starting Gurushot Auto Voter\n');
+      console.log('Starting Gurushots Auto Voter\n');
       console.log("------------------------------------------------");
-      let browser = await puppeteer.launch({headless: false, dumpio: false, devtools: false});
+      let browser = await puppeteer.launch();
       let page = await browser.newPage();
       await page.setViewport({width: 1200, height: 720})
-      await page.goto('https://gurushots.com/', {waitUntil: 'networkidle0'});
+      await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:87.0) Gecko/20100101 Firefox/87.0');
+      await page.goto('https://gurushots.com/', {waitUntil: 'networkidle0', timeout: 0});
 
 
       if (!Object.keys(cookies).length) {
@@ -47,7 +47,7 @@ cron.schedule('*/2 * * * *', () => {
          await page.type(password, config.password);
          await page.click(loginSubmit);
          await page.waitForNavigation();
-
+         await page.goto("https://gurushots.com/", {waitUntil: "networkidle2", timeout: 0});
          try {
             await page.waitForSelector('[ng-click="$ctrl.goProfile()"]');
          } catch (err) {
@@ -60,7 +60,7 @@ cron.schedule('*/2 * * * *', () => {
          console.log(config.username + " is already logged in, redirecting...");
          console.log("------------------------------------------------");
          await page.setCookie(...cookies);
-         await page.goto("https://gurushots.com/", {waitUntil: "networkidle2"});
+         await page.goto("https://gurushots.com/", {waitUntil: "networkidle2", timeout: 0});
       }
 
       page.on('console', async e => {
@@ -107,7 +107,7 @@ cron.schedule('*/2 * * * *', () => {
             }
          }
 
-         console.log("Voting Done\n\n------------------------------------------------\n");
+         console.log("\n------------------------------------------------\nVoting Done\n------------------------------------------------\n");
          console.log("Trying for free boosts");
          if (boostBtns.length >= 1) {
             for (var btn of boostBtns) {
@@ -120,8 +120,10 @@ cron.schedule('*/2 * * * *', () => {
          } else {
             console.log("No free boosts available");
          }
+
+
       })
       await browser.close();
-      await console.log('Finished Session');
+      await console.log('\n------------------------------------------------\nFinished Session\n------------------------------------------------\n\n\n');
    })()
-})
+});
