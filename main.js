@@ -1,10 +1,11 @@
-const puppeteer = require('puppeteer');
-const fs = require('fs');
-const config = require('./config.json');
-const cookies = require('./cookies.json');
-const cron = require('node-cron');
+let puppeteer = require('puppeteer');
+let fs = require('fs');
+let config = require('./config.json');
+//let config = require('dotenv').config();
+let cookies = require('./cookies.json');
+let cron = require('node-cron');
 
-const runner = cron.schedule('*/30 * * * *', () => {
+let runner = cron.schedule('*/30 * * * *', () => {
    console.clear();
    console.log("   _____                      _           _                       _         __      __   _            \n" +
        "  / ____|                    | |         | |           /\\        | |        \\ \\    / /  | |           \n" +
@@ -25,14 +26,14 @@ const runner = cron.schedule('*/30 * * * *', () => {
 
 
       if (!Object.keys(cookies).length) {
-         const login = '.modal-login__form > div:nth-child(1) > input';
-         const password = '.modal-login__form > div:nth-child(2) > input';
-         const loginSubmit = '#dialogContent_0 > md-dialog-content > form > button'
+         let login = '.modal-login__form > div:nth-child(1) > input';
+         let password = '.modal-login__form > div:nth-child(2) > input';
+         let loginSubmit = '#dialogContent_0 > md-dialog-content > form > button'
 
          await page.evaluate(async () => {
-            const loginBtn = document.querySelectorAll('header gs-header div > div > protection:nth-child(1) a');
+            let loginBtn = document.querySelectorAll('header gs-header div > div > protection:nth-child(1) a');
             for (var btn of loginBtn) {
-               const style = getComputedStyle(btn);
+               let style = getComputedStyle(btn);
 
                if (style.display !== 'none') {
                   await btn.click();
@@ -64,15 +65,15 @@ const runner = cron.schedule('*/30 * * * *', () => {
       }
 
       page.on('console', async e => {
-         const args = await Promise.all(e.args().map(a => a.jsonValue()));
+         let args = await Promise.all(e.args().map(a => a.jsonValue()));
          console.log(...args);
       });
 
       await page.evaluate(async () => {
          console.log("\nBeginning the Vote Session:\n");
-         const LetsGo = document.getElementsByClassName('modal-vote__greeting');
-         const voteBtns = document.getElementsByClassName('icon-vote-negative');
-         const boostBtns = document.getElementsByClassName('boost-state-available');
+         let LetsGo = document.getElementsByClassName('modal-vote__greeting');
+         let voteBtns = document.getElementsByClassName('icon-vote-negative');
+         let boostBtns = document.getElementsByClassName('boost-state-available');
 
          console.log("Challenges Available to Vote on:  " + voteBtns.length + "\n");
 
@@ -83,7 +84,7 @@ const runner = cron.schedule('*/30 * * * *', () => {
             let title = $('.modal-vote__challenge-title span')[0].innerText;
             console.log("Currently Voting on: " + title);
             $(LetsGo).click();
-            const picForVote = $(".modal-vote__photo__voted").prev();
+            let picForVote = $(".modal-vote__photo__voted").prev();
 
             if (picForVote.length === 0) {
                $('div[ng-click="$ctrl.submit()"]').click();
@@ -113,7 +114,7 @@ const runner = cron.schedule('*/30 * * * *', () => {
             for (var btn of boostBtns) {
                $(btn).click();
                await new Promise(resolve => setTimeout(resolve, 4000));
-               const picForVote = document.querySelector('div.c-modal-boost__photos > div:nth-child(1)');
+               let picForVote = document.querySelector('div.c-modal-boost__photos > div:nth-child(1)');
                $(picForVote).click();
                await new Promise(resolve => setTimeout(resolve, 4000));
             }
