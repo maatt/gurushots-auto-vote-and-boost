@@ -21,8 +21,22 @@ const cron = require('node-cron');
 const scheduleExpr = '*/30 * * * *';
 
 const logNextRun = (task) => {
-   const nextDate = task.nextDates().toDate();
-   console.log(`Next run scheduled for: ${nextDate.toLocaleString()}`);
+   try {
+      if (task && typeof task.nextDates === 'function') {
+         const nextDate = task.nextDates().toDate();
+         console.log(`Next run scheduled for: ${nextDate.toLocaleString()}`);
+         return;
+      }
+      if (task && typeof task.nextDate === 'function') {
+         const nextDate = task.nextDate().toDate();
+         console.log(`Next run scheduled for: ${nextDate.toLocaleString()}`);
+         return;
+      }
+   } catch (err) {
+      console.log(`Next run scheduled by cron. (${err.message})`);
+      return;
+   }
+   console.log('Next run scheduled by cron.');
 };
 
 const runOnce = async () => {
@@ -38,7 +52,10 @@ const runOnce = async () => {
    try {
       console.log('Starting Gurushots Auto Voter\n');
       console.log("------------------------------------------------");
-      let browser = await puppeteer.launch({headless: true});
+      let browser = await puppeteer.launch({
+         headless: true,
+         args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      });
       let page = await browser.newPage();
       await page.setViewport({width: 1200, height: 720})
       await page.setUserAgent(await browser.userAgent());
