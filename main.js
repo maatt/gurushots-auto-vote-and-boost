@@ -18,7 +18,14 @@ const loadCookies = (path) => {
 const cookies = loadCookies(COOKIE_FILE);
 const cron = require('node-cron');
 
-const runner = cron.schedule('*/30 * * * *', () => {
+const scheduleExpr = '*/30 * * * *';
+
+const logNextRun = (task) => {
+   const nextDate = task.nextDates().toDate();
+   console.log(`Next run scheduled for: ${nextDate.toLocaleString()}`);
+};
+
+const runOnce = async () => {
    console.clear();
    console.log("   _____                      _           _                       _         __      __   _            \n" +
        "  / ____|                    | |         | |           /\\        | |        \\ \\    / /  | |           \n" +
@@ -28,7 +35,7 @@ const runner = cron.schedule('*/30 * * * *', () => {
        "  \\_____|\\__,_|_|   \\__,_|___/_| |_|\\___/ \\__|___/ /_/    \\_\\__,_|\\__\\___/      \\/ \\___/ \\__\\___|_|   \n" +
        "                                                                                                      \n" +
        "                                                                                                      ");
-   (async () => {
+   try {
       console.log('Starting Gurushots Auto Voter\n');
       console.log("------------------------------------------------");
       let browser = await puppeteer.launch({headless: true});
@@ -366,5 +373,15 @@ const runner = cron.schedule('*/30 * * * *', () => {
       })
       await browser.close();
       await console.log('\n------------------------------------------------\nFinished Session\n------------------------------------------------\n\n\n');
-   })()
-});
+   } catch (err) {
+      console.log(`Runner failed: ${err.message}`);
+   }
+};
+
+const runner = cron.schedule(scheduleExpr, async () => {
+   await runOnce();
+   logNextRun(runner);
+}, {scheduled: false});
+
+runner.start();
+runOnce().then(() => logNextRun(runner));
