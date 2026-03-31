@@ -18,7 +18,7 @@ const loadCookies = (path) => {
 const cookies = loadCookies(COOKIE_FILE);
 const cron = require('node-cron');
 
-const scheduleExpr = '*/30 * * * *';
+const scheduleExpr = '*/15 * * * *';
 
 const logNextRun = (task) => {
    try {
@@ -42,13 +42,12 @@ const logNextRun = (task) => {
 const runOnce = async () => {
    console.clear();
    console.log("   _____                      _           _                       _         __      __   _            \n" +
-       "  / ____|                    | |         | |           /\\        | |        \\ \\    / /  | |           \n" +
-       " | |  __ _   _ _ __ _   _ ___| |__   ___ | |_ ___     /  \\  _   _| |_ ___    \\ \\  / /__ | |_ ___ _ __ \n" +
-       " | | |_ | | | | '__| | | / __| '_ \\ / _ \\| __/ __|   / /\\ \\| | | | __/ _ \\    \\ \\/ / _ \\| __/ _ \\ '__|\n" +
-       " | |__| | |_| | |  | |_| \\__ \\ | | | (_) | |_\\__ \\  / ____ \\ |_| | || (_) |    \\  / (_) | ||  __/ |   \n" +
-       "  \\_____|\\__,_|_|   \\__,_|___/_| |_|\\___/ \\__|___/ /_/    \\_\\__,_|\\__\\___/      \\/ \\___/ \\__\\___|_|   \n" +
-       "                                                                                                      \n" +
-       "                                                                                                      ");
+      "  / ____|                    | |         | |           /\\        | |        \\ \\    / /  | |           \n" +
+      " | |  __ _   _ _ __ _   _ ___| |__   ___ | |_ ___     /  \\  _   _| |_ ___    \\ \\  / /__ | |_ ___ _ __ \n" +
+      " | | |_ | | | | '__| | | / __| '_ \\ / _ \\| __/ __|   / /\\ \\| | | | __/ _ \\    \\ \\/ / _ \\| __/ _ \\ '__|\n" +
+      " | |__| | |_| | |  | |_| \\__ \\ | | | (_) | |_\\__ \\  / ____ \\ |_| | || (_) |    \\  / (_) | ||  __/ |   \n" +
+      "  \\_____|\\__,_|_|   \\__,_|___/_| |_|\\___/ \\__|___/ /_/    \\_\\__,_|\\__\\___/      \\/ \\___/ \\__\\___|_|   \n" +
+      "                                                                                                      ");
    try {
       console.log('Starting Gurushots Auto Voter\n');
       console.log("------------------------------------------------");
@@ -57,14 +56,14 @@ const runOnce = async () => {
          args: ['--no-sandbox', '--disable-setuid-sandbox'],
       });
       let page = await browser.newPage();
-      await page.setViewport({width: 1200, height: 720})
+      await page.setViewport({ width: 1200, height: 720 })
       await page.setUserAgent(await browser.userAgent());
 
       const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-      const withUrl = (items, url) => items.map(item => (item.url ? item : {...item, url}));
+      const withUrl = (items, url) => items.map(item => (item.url ? item : { ...item, url }));
 
-      await page.goto('https://gurushots.com/', {waitUntil: 'networkidle0', timeout: 0});
+      await page.goto('https://gurushots.com/', { waitUntil: 'networkidle0', timeout: 0 });
 
       const getCoinBalance = async () => {
          const balanceText = await page.evaluate(() => {
@@ -143,7 +142,7 @@ const runOnce = async () => {
          };
 
          await openLoginModal();
-         await page.waitForSelector('.modal-login__form', {visible: true, timeout: 15000});
+         await page.waitForSelector('.modal-login__form', { visible: true, timeout: 15000 });
          const loginSelector = await waitForAnySelector(loginSelectors);
          const passwordSelector = await waitForAnySelector(passwordSelectors);
          const submitSelector = await findFirstSelector(submitSelectors);
@@ -156,7 +155,7 @@ const runOnce = async () => {
          await page.click(submitSelector);
 
          await sleep(1500);
-         await page.goto("https://gurushots.com/", {waitUntil: "networkidle2", timeout: 0});
+         await page.goto("https://gurushots.com/", { waitUntil: "networkidle2", timeout: 0 });
          const isLoggedIn = await page.evaluate(() => {
             const signIn = document.querySelector('.signin-button');
             const loginLink = document.querySelector('.link--s--.login--s--');
@@ -181,7 +180,7 @@ const runOnce = async () => {
          console.log(config.username + " is already logged in, redirecting...");
          console.log("------------------------------------------------");
          await page.setCookie(...withUrl(cookies, 'https://gurushots.com/'));
-         await page.goto("https://gurushots.com/", {waitUntil: "networkidle2", timeout: 0});
+         await page.goto("https://gurushots.com/", { waitUntil: "networkidle2", timeout: 0 });
          console.log(`Logged in as: ${config.username}`);
          const coinBalance = await getCoinBalance();
          console.log(`Coin Balance: ${coinBalance ?? 'unknown'}`);
@@ -215,7 +214,7 @@ const runOnce = async () => {
 
       const submitSuggestedChallenges = async () => {
          console.log("Joining suggested challenges...");
-         await page.goto("https://gurushots.com/challenges/my-challenges/current", {waitUntil: "networkidle2", timeout: 0});
+         await page.goto("https://gurushots.com/challenges/my-challenges/current", { waitUntil: "networkidle2", timeout: 0 });
          const joinResult = await page.evaluate(async () => {
             const GREEN = '\x1b[32m';
             const RED = '\x1b[31m';
@@ -300,7 +299,7 @@ const runOnce = async () => {
 
       await submitSuggestedChallenges();
 
-      await page.goto("https://gurushots.com/challenges/my-challenges/current", {waitUntil: "networkidle2", timeout: 0});
+      await page.goto("https://gurushots.com/challenges/my-challenges/current", { waitUntil: "networkidle2", timeout: 0 });
       await page.evaluate(async () => {
          if (window.__gsVoteSessionStarted) {
             return;
@@ -333,22 +332,33 @@ const runOnce = async () => {
          const actionVoteBtns = Array.from(document.querySelectorAll('.action-button .icon-voting'))
             .map(el => el.closest('.action-button'))
             .filter(Boolean);
-         const voteActions = voteBtns.length ? voteBtns : actionVoteBtns;
+         const alternativeVoteBtns = Array.from(document.querySelectorAll('[ng-click*="vote"], .vote-button, .gs-btn-vote'));
+         const voteActions = voteBtns.length ? voteBtns :
+            actionVoteBtns.length ? actionVoteBtns :
+               alternativeVoteBtns;
 
          nodeLog("Challenges Available to Vote on:  " + voteActions.length + "\n");
 
          for (const btn of voteActions) {
             if (btn instanceof Element) {
                btn.click();
-            } else {
+            } else if (typeof $ !== 'undefined') {
                $(btn).click();
+            } else {
+               btn.click();
             }
             await new Promise(resolve => setTimeout(resolve, 4000));
             const titleEl = document.querySelector('.modal-vote__challenge-title span');
             const title = titleEl ? titleEl.innerText : 'Unknown';
             nodeLog("Currently Voting on: " + title);
-            $(LetsGo).click();
-            const picForVote = $(".modal-vote__photo__voted").prev();
+            if (typeof $ !== 'undefined' && LetsGo && LetsGo.length) {
+               $(LetsGo).click();
+            } else if (LetsGo && LetsGo.length > 0) {
+               LetsGo[0].click();
+            }
+            const picForVote = typeof $ !== 'undefined' ?
+               $(".modal-vote__photo__voted").prev() :
+               document.querySelectorAll('.modal-vote__photo__voted');
 
             if (picForVote.length === 0) {
                $('div[ng-click="$ctrl.submit()"]').click();
@@ -385,8 +395,6 @@ const runOnce = async () => {
          } else {
             nodeLog("No free boosts available");
          }
-
-
       })
       await browser.close();
       await console.log('\n------------------------------------------------\nFinished Session\n------------------------------------------------\n\n\n');
@@ -396,9 +404,14 @@ const runOnce = async () => {
 };
 
 const runner = cron.schedule(scheduleExpr, async () => {
-   await runOnce();
-   logNextRun(runner);
-}, {scheduled: false});
+   try {
+      await runOnce();
+      logNextRun(runner);
+   } catch (err) {
+      console.log(`Cron runner failed: ${err.message}`);
+      console.log(`Stack trace: ${err.stack}`);
+   }
+}, { scheduled: false });
 
 runner.start();
 runOnce().then(() => logNextRun(runner));
