@@ -1,0 +1,11 @@
+{
+  "username": "",
+  "password": "",
+  "voting": {
+    "triggerExposure": 80,
+    "targetExposure": 100,
+    "freeBoosts": true,
+    "autoJoin": true,
+    "schedule": "*/30 * * * *"
+  }
+}
