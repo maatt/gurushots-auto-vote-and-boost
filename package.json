@@ -1,18 +1,20 @@
 {
   "name": "gurushot-voter",
-  "version": "1.0.0",
-  "devDependencies": {
-    "puppeteer": "^24.37.1"
-  },
+  "version": "2.0.0",
   "dependencies": {
-    "node-cron": "^4.2.1",
-    "nodemon": "^3.1.11"
+    "node-cron": "^4.2.1"
   },
   "description": "Gurushots auto voting and boosting",
   "main": "main.js",
   "scripts": {
     "start": "node main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "pm2": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop ecosystem.config.js",
+    "pm2:logs": "pm2 logs gurushots-autovoter",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "author": "maatt",
   "license": "ISC",
@@ -23,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/maatt/gurushots-auto-vote-and-boost/issues"
   },
-  "homepage": "https://github.com/maatt/gurushots-auto-vote-and-boost#readme"
+  "homepage": "https://github.com/maatt/gurushots-auto-vote-and-boost#readme",
+  "devDependencies": {
+    "pm2": "^7.0.4"
+  }
 }
