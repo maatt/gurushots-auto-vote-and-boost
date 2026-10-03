@@ -36,6 +36,7 @@ async function main(args = process.argv.slice(2)) {
       stopping = true;
       if (task) task.stop();
       if (tui) tui.stop();
+      release();
    };
    process.once('SIGINT', stop);
    process.once('SIGTERM', stop);
